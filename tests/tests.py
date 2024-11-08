@@ -29,14 +29,14 @@ class TestFileEncoding(unittest.TestCase):
         self.files = os.listdir(os.path.join(self.working_dir, "files"))
         self.test_files = {}
 
-        for f in self.files:
-            file_path = os.path.join(self.working_dir, "files", f)
+        for file in self.files:
+            file_path = os.path.join(self.working_dir, "files", file)
             st = Stat(file_path)
-            self.test_files[f] = st
+            self.test_files[file] = st
 
     def test_file_encoding(self):
         for filename, file_obj in self.test_files.items():
-            og_file_path = os.path.join(self.working_dir, "files", filename)
+            og_file_path = file_obj.file_path
             expected_hash = file_obj.md5
 
             encode_file_to_base64(og_file_path)
