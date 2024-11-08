@@ -8,10 +8,9 @@
 
 ### usage
 
-```
 > [!WARNING]  
 > be aware that the script will encode all files located in the specified directory as well as in their subdirectories.
-```
+
 copy and paste the ``based64.py`` in the directory that you would like to encode the files and execute ``python3 based64.py`` or ``python3 based64.py --decode`` to decode them.
 
 ### know issues
