@@ -1,30 +1,37 @@
 import os
 import base64
 import argparse
+from typing import Literal
 
 BLACKLIST = {"based64.py"}
 FILE_EXT = "based64"
 
-def encode_file_to_base64(file_path):
-    save_to = f"{file_path}.{FILE_EXT}"
+def process_file(file_path: str, save_to: str, mode_writing: Literal["wb", "ab"] = "wb", action: Literal["encode", "decode"] = "encode") -> None:
+    actions = {
+        "decode": base64.b64decode,
+        "encode": base64.b64encode
+    }
+    base64_action = actions.get(action)
 
     with open(file_path, "rb") as file:
-        with open(save_to, "wb") as f64:
+        with open(save_to, mode_writing) as f64:
             for chunk in iter(lambda: file.read(), b""):
-                f64.write(base64.b64encode(chunk))
+                f64.write(base64_action(chunk))
 
-def decode_base64_file(file_path: str):
+def encode_file_to_base64(file_path: str) -> None:
+    save_to = f"{file_path}.{FILE_EXT}"
+
+    process_file(file_path, save_to)
+
+def decode_base64_file(file_path: str) -> None:
     if not file_path.endswith(FILE_EXT):
         raise Exception("wtf")
 
     save_to = ".".join(file_path.split(".")[:-1])
 
-    with open(file_path, "rb") as f64:
-        for chunk in iter(lambda: f64.read(), b""):
-            with open(save_to, "ab") as file:
-                file.write(base64.b64decode(chunk))
+    process_file(file_path, save_to, "ab", "decode")
 
-def main():
+def main() -> None:
     working_dir = os.path.dirname(os.path.realpath(__file__))
     files = []
 
@@ -38,6 +45,7 @@ def main():
     for file_path in files:
         try:
             base64_action(file_path)
+
             os.remove(file_path)
 
         except Exception as e:
@@ -48,7 +56,7 @@ def main():
             print(f"error processing '{file_path}': {e}.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="encode or decode files present in this very same FUCKING directory and its children.")
+    parser = argparse.ArgumentParser(description="encode or decode files present in this very same FUCKING directory and its subdirectories.")
     parser.add_argument("-d", "--decode", action="store_true")
     args = parser.parse_args()
 

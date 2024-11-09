@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from based64 import FILE_EXT, encode_file_to_base64, decode_base64_file
 
-def get_file_hash(file_path):
+def get_file_hash(file_path: str) -> str:
     hash_md5 = hashlib.md5()
 
     with open(file_path, "rb") as file:
@@ -17,14 +17,14 @@ def get_file_hash(file_path):
     return hash_md5.hexdigest()
 
 class Stat: # <---- omg just like c
-    def __init__(self, file_path):
+    def __init__(self, file_path: str) -> None:
         self.filename = os.path.basename(file_path)
         self.file_path = file_path
         self.size = os.path.getsize(file_path)
         self.md5 = get_file_hash(file_path)
 
 class TestFileEncoding(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.working_dir = os.path.dirname(os.path.realpath(__file__))
         self.files = os.listdir(os.path.join(self.working_dir, "files"))
         self.test_files = {}
@@ -34,13 +34,13 @@ class TestFileEncoding(unittest.TestCase):
             st = Stat(file_path)
             self.test_files[file] = st
 
-    def test_file_encoding(self):
+    def test_file_encoding(self) -> None:
         for filename, file_obj in self.test_files.items():
             og_file_path = file_obj.file_path
             expected_hash = file_obj.md5
 
             encode_file_to_base64(og_file_path)
-
+            
             os.remove(og_file_path)
 
             decoded_file_path = f"{og_file_path}.{FILE_EXT}"
