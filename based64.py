@@ -32,15 +32,20 @@ def decode_base64_file(file_path: str) -> None:
     process_file(file_path, save_to, "ab", "decode")
 
 def main() -> None:
-    working_dir = os.path.dirname(os.path.realpath(__file__))
     files = []
-
-    for root, dirs, filenames in os.walk(working_dir):
-        for filename in filenames:
-            if filename not in BLACKLIST:
-                files.append(os.path.join(root, filename))
-
     base64_action = decode_base64_file if args.decode else encode_file_to_base64
+
+    if args.files is not None:
+        files = args.files
+
+    else:
+        working_dir = os.path.dirname(os.path.realpath(__file__))
+        
+        for root, _, filenames in os.walk(working_dir):
+            for filename in filenames:
+                if filename not in BLACKLIST:
+                    files.append(os.path.join(root, filename))
+
 
     for file_path in files:
         try:
@@ -57,6 +62,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="encode or decode files present in this very same FUCKING directory and its subdirectories.")
+    parser.add_argument("-f", "--files", nargs="*")
     parser.add_argument("-d", "--decode", action="store_true")
     args = parser.parse_args()
 
